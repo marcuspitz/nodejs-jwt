@@ -46,15 +46,12 @@ function verifyJWT(req, res, next){
     jwt.verify(token, process.env.SECRET, function(err, decoded) {
         if (err) return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });    
         req.userId = decoded.id;
-        console.log("JSON Token validated:" + next);
         next();
     });
 }
 
 app.use(logger('dev'));
 app.use(helmet());
-//app.use(express.json());
-//app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 var server = http.createServer(app);
