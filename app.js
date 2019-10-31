@@ -24,10 +24,9 @@ app.get('/products', verifyJWT, (req, res, next) => {
 
 app.post('/login', (req, res, next) => {
     if(req.body.user === 'luiz' && req.body.pwd === '123'){
-        //auth ok
-        const id = 1; //esse id viria do banco de dados
+        const id = 1;
         var token = jwt.sign({ id }, process.env.SECRET, {
-            expiresIn: 300 // expires in 5min
+            expiresIn: 300 // expires in 5min (300 mileseconds)
         });
         res.status(200).send({ auth: true, token: token });
     } else {
@@ -55,4 +54,6 @@ app.use(helmet());
 app.use(cookieParser());
 
 var server = http.createServer(app);
-server.listen(3000);
+server.listen(3000, () => {
+    console.log("Server running at localhost:3000");
+});
