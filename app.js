@@ -39,18 +39,55 @@ app.post('/login', (req, res, next) => {
     }
 });
 
-app.post('/auth/login', (req, res, next) => {
+let getToken = (payload, expiresIn=3000) => {
+    return jwt.sign(payload, process.env.SECRET, {
+        expiresIn // expires in 50min (3000 mileseconds)
+    });
+}
+
+let getTokenSecretWeird = (payload, expiresIn=3000) => {
+    return jwt.sign(payload, "weird34234234234sdfsdfsdfsdf", {
+        expiresIn // expires in 50min (3000 mileseconds)
+    });
+}
+
+app.post('/auth/fakeLogin', (req, res, next) => {
     if(req.body.UserName === 'luiz' && req.body.Password === '123'){
         const id = 1;
-        var token = jwt.sign({ 
+        var token = getToken({ 
             userName: 'marcuspitz',
             name: 'Marcus Pitz',
             email: 'marcusviniciuspitz@gmail.com',
             roles: [
                 {name: 'web.access.it.policy', description:'Role para acesso ao sistema'}
             ],
-        }, process.env.SECRET, {
-            expiresIn: 3000 // expires in 5min (300 mileseconds)
+        },30);
+        res.status(200).send({
+            success: true, 
+            message: 'Login realizado com sucesso',
+            userName: 'marcuspitz',
+            name: 'Marcus Pitz',
+            email: 'marcusviniciuspitz@gmail.com',
+            roles: [
+                {name: 'web.access.it.policy', description:'Role para acesso ao sistema'}
+            ],
+            access_token: token
+       });
+    } else {
+        res.status(500).send('Invalid login');
+    }
+});
+
+app.post('/auth/fakeSecret', (req, res, next) => {
+    if(req.body.UserName === 'luiz' && req.body.Password === '123'){
+        const id = 1;
+        var token = getTokenSecretWeird({ 
+            userName: 'marcuspitz',
+            name: 'Marcus Pitz',
+            email: 'marcusviniciuspitz@gmail.com',
+            roles: [
+                {name: 'web.access.it.policy', description:'Role para acesso ao sistema'}
+            ],
         });
         res.status(200).send({
             success: true, 
@@ -65,6 +102,62 @@ app.post('/auth/login', (req, res, next) => {
        });
     } else {
         res.status(500).send('Invalid login');
+    }
+});
+
+app.post('/auth/login', (req, res, next) => {
+    if(req.body.UserName === 'luiz' && req.body.Password === '123'){
+        const id = 1;
+        var token = getToken({ 
+            userName: 'marcuspitz',
+            name: 'Marcus Pitz',
+            email: 'marcusviniciuspitz@gmail.com',
+            roles: [
+                {name: 'web.access.it.policy', description:'Role para acesso ao sistema'}
+            ],
+        });
+        res.status(200).send({
+            success: true, 
+            message: 'Login realizado com sucesso',
+            userName: 'marcuspitz',
+            name: 'Marcus Pitz',
+            email: 'marcusviniciuspitz@gmail.com',
+            roles: [
+                {name: 'web.access.it.policy', description:'Role para acesso ao sistema'}
+            ],
+            access_token: token
+       });
+    } else {
+        res.status(500).send('Invalid login');
+    }
+});
+
+app.post('/auth/refresh', (req, res, next) => {
+    if(req.body.token != null){
+        jwt.verify(req.body.token, process.env.SECRET, function(err, decoded) {
+            if (err) 
+                return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
+            
+            var token = getToken({ 
+                userName: 'marcuspitz',
+                name: 'Marcus Pitz',
+                email: 'marcusviniciuspitz@gmail.com',
+                roles: [
+                    {name: 'web.access.it.policy', description:'Role para acesso ao sistema'}
+                ],
+            });
+            res.status(200).send({
+                success: true, 
+                message: 'Login realizado com sucesso',
+                userName: 'marcuspitz',
+                name: 'Marcus Pitz',
+                email: 'marcusviniciuspitz@gmail.com',
+                roles: [
+                    {name: 'web.access.it.policy', description:'Role para acesso ao sistema'}
+                ],
+                access_token: token
+            });
+        });
     }
 });
 
